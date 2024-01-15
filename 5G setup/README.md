@@ -1,6 +1,6 @@
 # 5G setup 
 
-## Setup OS required: 
+### Setup OS required: 
 
 * Ubuntu 20.04
 
@@ -35,7 +35,7 @@ For this approach, we prefer to setup different componets of the simulation in s
 
 ### VM1: Control Plane Setup 
 
-#### Create VM in virt-manager 
+### Create VM in virt-manager 
 
 * Open virt-manager 
 
@@ -106,9 +106,9 @@ ssh cp@192.168.100.154
 
 
 
-# Open5GS - CP 
+### Open5GS - CP 
 
-## Getting MongoDB
+### Getting MongoDB
 
 * Import the public key used by the package management system.
 
@@ -136,7 +136,7 @@ sudo systemctl enable mongod
 ```
 
 
-## Getting Open5GS
+### Getting Open5GS
 
 * Ubuntu makes it easy to install Open5GS as shown below.
 
@@ -150,7 +150,7 @@ sudo apt install open5gs -y
 
 
 
-## Building the WebUI of Open5GS
+### Building the WebUI of Open5GS
 
 The WebUI allows you to interactively edit subscriber data. While it is not essential to use this, it makes things easier when you are just starting out on your Open5GS adventure. (A command line tool is available for advanced users).
 
@@ -172,7 +172,7 @@ curl -fsSL https://open5gs.org/open5gs/assets/webui/install | sudo -E bash -
 
 
 
-## Register Subscriber Information
+### Register Subscriber Information
 
 Connect to http://127.0.0.1:3000 and login with admin account.
 
@@ -303,7 +303,7 @@ sudo python3 addSubscriber.py
 
 
 
-## Verify mongodb 
+### Verify mongodb 
 
 ```bash
 mongosh 
@@ -335,7 +335,7 @@ db.subscribers.find({})
 
 ### VM2: User Plane Setup 
 
-#### Create VM in virt-manager 
+### Create VM in virt-manager 
 
 * Open virt-manager 
 
@@ -402,7 +402,7 @@ ssh up@192.168.100.194
 
 
 
-# Open5GS - UP 
+### Open5GS - UP 
 
 
 
@@ -413,7 +413,7 @@ sudo apt update && sudo apt upgrade -y
 **Remember to make a snapshot**
 
 
-## Getting Open5GS
+### Getting Open5GS
 
 * Ubuntu makes it easy to install Open5GS as shown below.
 
@@ -465,7 +465,7 @@ sudo crontab -e
 
 ### VM3: gNB Setup 
 
-#### Create VM in virt-manager 
+### Create VM in virt-manager 
 
 * Open virt-manager 
 
@@ -530,9 +530,9 @@ ssh gnb@192.168.100.209
 
 
 
-# UERANSIM - gNB
+### UERANSIM - gNB
 
-## Getting the UERANSIM
+### Getting the UERANSIM
 
 ```bash
 sudo apt update && sudo apt upgrade -y && sudo apt install git -y
@@ -552,7 +552,7 @@ cd UERANSIM
 sudo apt install make && sudo apt install gcc -y && sudo apt install g++ && sudo apt install libsctp-dev lksctp-tools -y && sudo apt install iproute2 && sudo snap install cmake --classic
 ```
 
-## Build UERANSIM
+### Build UERANSIM
 
 ```bash 
 cd ~/UERANSIM
@@ -567,12 +567,9 @@ make
 
 
 
-
-
-
 ### VM4: UE Setup 
 
-#### Create VM in virt-manager 
+### Create VM in virt-manager 
 
 * Open virt-manager 
 
@@ -636,9 +633,9 @@ ssh ue@192.168.100.192
 
 
 
-# UERANSIM - UE
+### UERANSIM - UE
 
-## Getting the UERANSIM
+### Getting the UERANSIM
 
 ```bash
 sudo apt update && sudo apt upgrade -y && sudo apt install git -y
@@ -658,9 +655,91 @@ cd UERANSIM
 sudo apt install make && sudo apt install gcc -y && sudo apt install g++ && sudo apt install libsctp-dev lksctp-tools -y && sudo apt install iproute2 && sudo snap install cmake --classic
 ```
 
-## Build UERANSIM
+### Build UERANSIM
 
 ```bash 
 cd ~/UERANSIM
 make
 ```
+
+
+
+
+
+
+## Import the provided 5G VMs
+
+For this approach, we prefer to setup different componets of the simulation in separate VMs: 
+
+* VM1 for the Control Plane (CP)
+* VM2 for the User Plane (UP)
+* VM3 for the gNB 
+* VM4 for the UE 
+
+
+* Download the VM images into the directory below 
+
+https://fiudit-my.sharepoint.com/:f:/g/personal/dpine033_fiu_edu/Ej0FVOWDmQ9GvnbVWCARvLwB20IyuPuQMOe1DH2uypqFAg?e=hsVThF
+
+```bash
+5G-SDN-Flood/5G setup/VMimages
+```
+
+
+```bash
+cd 5G-SDN-Flood/5G setup/VMimages
+unzip CP.zip 
+unzip UP.zip 
+unzip GNB.zip 
+unzip UE.zip 
+sudo cp CP.qcow2 /var/lib/libvirt/images
+sudo cp UP.qcow2 /var/lib/libvirt/images
+sudo cp GNB.qcow2 /var/lib/libvirt/images
+sudo cp UE.qcow2 /var/lib/libvirt/images
+```
+
+* Import the VMs 
+
+
+```bash 
+virsh define --file CP.xml
+virsh define --file UP.xml
+virsh define --file GNB.xml
+virsh define --file UE.xml
+```
+
+
+
+## Duplicate the current setup 
+
+Since we are going to have two approaches, we need to have two deployments 
+
+<p align="center">
+  <img src="images/currentVMs.png" alt="Step 5">
+</p>
+
+* Clone CP 
+
+<p align="center">
+  <img src="images/cloneCP.png">
+</p>
+
+<p align="center">
+  <img src="images/cloneUP.png">
+</p>
+
+<p align="center">
+  <img src="images/cloneGNB.png">
+</p>
+
+
+<p align="center">
+  <img src="images/cloneUE.png">
+</p>
+
+
+### Created VMs
+
+<p align="center">
+  <img src="images/createdVMs.png">
+</p>
